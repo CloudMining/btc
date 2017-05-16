@@ -95,6 +95,6 @@ CC="$CC" CXX="$CXX" \
   "$LCOV_ARG" \
   "$TEST_ARG" \
   "$MINING_ARG" \
-  CXXFLAGS='-fwrapv -fno-strict-aliasing -Werror -g'
+  CXXFLAGS='-std=c++11 -fwrapv -fno-strict-aliasing -Werror -g'
 
 "$MAKE" "$@" V=1
