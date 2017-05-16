@@ -208,6 +208,8 @@ libbitcoin_server_a_SOURCES = \
 # when wallet enabled
 libbitcoin_wallet_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_SOURCES = \
+  zcbenchmarks.cpp \
+  zcbenchmarks.h \
   wallet/crypter.cpp \
   wallet/db.cpp \
   wallet/rpcdump.cpp \
