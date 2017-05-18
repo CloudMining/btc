@@ -81,7 +81,8 @@ HOST="$HOST" BUILD="$BUILD" \
     -C \
     ./depends/ \
     V=1 \
-    NO_QT=1
+    NO_QT=1 \
+    NO_UPNP=1 \
 
 ./autogen.sh
 
@@ -91,10 +92,11 @@ CC="$CC" CXX="$CXX" \
   --host="$HOST" \
   --build="$BUILD" \
   --without-gui \
+  --without-miniupnpc \
   "$HARDENING_ARG" \
   "$LCOV_ARG" \
   "$TEST_ARG" \
   "$MINING_ARG" \
-  CXXFLAGS='-std=c++11 -fwrapv -fno-strict-aliasing -Werror -g'
+  CXXFLAGS='-fwrapv -fno-strict-aliasing -Werror -g'
 
 "$MAKE" "$@" V=1

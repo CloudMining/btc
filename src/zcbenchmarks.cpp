@@ -1,22 +1,11 @@
-#include <future>
-#include <thread>
+#include <cassert>
 #include <unistd.h>
-#include <boost/filesystem.hpp>
 
-#include "coins.h"
-#include "util.h"
-#include "init.h"
-#include "primitives/transaction.h"
-#include "base58.h"
-#include "chainparams.h"
-#include "consensus/validation.h"
-#include "main.h"
-#include "miner.h"
-#include "pow.h"
+#include "key.h"
+#include "pubkey.h"
+#include "keystore.h"
 #include "script/sign.h"
 #include "streams.h"
-#include "wallet/wallet.h"
-
 #include "zcbenchmarks.h"
 
 #define TARGET_TX_SIZE 1000000
@@ -53,7 +42,7 @@ double benchmark_large_tx()
     // Create priv/pub key
     CKey priv;
     priv.MakeNewKey(false);
-    auto pub = priv.GetPubKey();
+    CPubKey pub = priv.GetPubKey();
     CBasicKeyStore tempKeystore;
     tempKeystore.AddKey(priv);
 
@@ -65,13 +54,13 @@ double benchmark_large_tx()
     CScript prevPubKey = GetScriptForDestination(pub.GetID());
     m_orig_tx.vout[0].scriptPubKey = prevPubKey;
 
-    auto orig_tx = CTransaction(m_orig_tx);
+    CTransaction orig_tx = CTransaction(m_orig_tx);
 
     CMutableTransaction spending_tx;
-    auto input_hash = orig_tx.GetHash();
+    uint256 input_hash = orig_tx.GetHash();
     // Add NUM_INPUTS inputs
     for (size_t i = 0; i < NUM_INPUTS; i++) {
-        spending_tx.vin.emplace_back(input_hash, 0);
+        spending_tx.vin.push_back(CTxIn(input_hash, 0));
     }
 
     // Sign for all the inputs
@@ -85,7 +74,7 @@ double benchmark_large_tx()
         ss << spending_tx;
         //std::cout << "SIZE OF SPENDING TX: " << ss.size() << std::endl;
 
-        auto error = TARGET_TX_SIZE / 20; // 5% error
+        uint64_t error = TARGET_TX_SIZE / 20; // 5% error
         assert(ss.size() < TARGET_TX_SIZE + error);
         assert(ss.size() > TARGET_TX_SIZE - error);
     }
