@@ -16,6 +16,7 @@
 #include "utilmoneystr.h"
 #include "wallet.h"
 #include "walletdb.h"
+#include "zcbenchmarks.h"
 
 #include <stdint.h>
 
@@ -2378,24 +2379,22 @@ Value zc_benchmark(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid samplecount");
     }
 
-    std::vector<double> sample_times;
+    Array results;
 
     LOCK(cs_main);
 
     for (int i = 0; i < samplecount; i++) {
+        double measuredtime;
+
         if (benchmarktype == "sleep") {
-            sample_times.push_back(benchmark_sleep());
+            measuredtime = benchmark_sleep() ;
         } else if (benchmarktype == "validatelargetx") {
-            sample_times.push_back(benchmark_large_tx());
+            measuredtime = benchmark_large_tx();
         } else {
             throw JSONRPCError(RPC_TYPE_ERROR, "Invalid benchmarktype");
         }
-    }
-
-    Array results(UniValue::VARR);
-    for (auto time : sample_times) {
         Object result;
-        result.push_back(Pair("runningtime", time));
+        result.push_back(Pair("runningtime", measuredtime));
         results.push_back(result);
     }
 
